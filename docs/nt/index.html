@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mult disting NT Manual</title>
+<style>
+
+  :root{
+    --bg:#0b1119; --panel:#1c242e; --panel-edge:#39424e;
+    --ink:#c9d9e6; --muted:#84939f; --accent:#e2a24a;
+    --oled:#04070b; --glow:rgba(140,190,255,.13);
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:var(--mono);margin:0;padding:40px 20px 90px}
+  .wrap{max-width:840px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+  .eyebrow{color:var(--accent);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+  h1{font-size:30px;font-weight:700;color:#eef2f6;margin:10px 0 4px;letter-spacing:.14em;text-wrap:balance}
+  .vstamp{color:var(--muted);font-size:11px;letter-spacing:.14em;margin:0 0 10px}
+  .lede{color:var(--muted);font-size:13.5px;line-height:1.7;max-width:64ch;margin:0}
+  .lede b{color:var(--ink)}
+  h2{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0 0 16px;font-weight:600}
+  h3{font-size:13px;color:#e8eef5;margin:22px 0 8px;font-weight:700;letter-spacing:.02em}
+  section>h3:first-of-type{margin-top:0}
+  p{font-size:12.5px;line-height:1.75;color:var(--muted);margin:0 0 10px;max-width:70ch}
+  p b,li b{color:var(--ink)}
+  p code,li code,td code{color:var(--accent);background:rgba(226,162,74,.08);padding:0 4px;border-radius:3px;font-size:.95em}
+  ul,ol{margin:0 0 10px;padding-left:20px;display:flex;flex-direction:column;gap:7px}
+  li{font-size:12.5px;line-height:1.7;color:var(--muted)}
+  li::marker{color:var(--accent)}
+  a{color:var(--accent)}
+
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .toc a{color:var(--ink);text-decoration:none;font-size:10.5px;letter-spacing:.08em;
+    border:1px solid var(--panel-edge);border-radius:999px;padding:5px 12px;background:#141b24}
+  .toc a:hover,.toc a:focus-visible{border-color:var(--accent);color:var(--accent);outline:none}
+
+  .panel{background:linear-gradient(180deg,#232b35,#1a212a);border:1px solid var(--panel-edge);
+    border-radius:12px;padding:22px 26px 24px;position:relative;
+    box-shadow:0 20px 50px rgba(0,0,0,.45)}
+  .screw{position:absolute;width:8px;height:8px;border-radius:50%;background:#0f141b;border:1px solid #444f5c}
+  .screw.tl{top:10px;left:10px}.screw.tr{top:10px;right:10px}
+  .screw.bl{bottom:10px;left:10px}.screw.br{bottom:10px;right:10px}
+  .screenframe{background:#0e141c;border:1px solid #05080c;border-radius:6px;padding:10px;
+    box-shadow:inset 0 2px 10px rgba(0,0,0,.8), 0 0 34px var(--glow)}
+  canvas{display:block;width:100%;image-rendering:pixelated;background:var(--oled)}
+  canvas.screen{aspect-ratio:4/1}
+  .cap{font-size:11.5px;color:var(--muted);line-height:1.65;margin-top:10px;max-width:70ch}
+  .cap b{color:var(--ink)}
+  .potrow{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:16px}
+  @media (max-width:560px){.potrow{grid-template-columns:1fr}}
+  .potrow label{display:flex;flex-direction:column;gap:6px;font-size:10.5px;letter-spacing:.16em;
+    color:var(--accent);text-transform:uppercase}
+  .potrow input[type=range]{width:100%;accent-color:var(--accent)}
+
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th{color:var(--muted);font-weight:600;text-align:left;font-size:10px;text-transform:uppercase;
+    letter-spacing:.14em;padding:8px 12px;border-bottom:1px solid #2c3641}
+  td{padding:8px 12px;border-bottom:1px solid #1c242e;vertical-align:top;line-height:1.6;color:var(--muted)}
+  td:first-child{color:#e8eef5;font-weight:700;white-space:nowrap}
+  td:nth-child(2){color:var(--accent);white-space:nowrap}
+  .tablewrap{overflow-x:auto}
+  .wide td:nth-child(2){white-space:normal}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .card{border:1px solid var(--panel-edge);border-radius:10px;background:#141b24;padding:16px 18px}
+  .card h4{margin:0 0 8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  .card p{margin:0;font-size:12px}
+  .card .set{display:block;margin-top:10px;padding-top:10px;border-top:1px dashed #2c3641;
+    font-size:11px;color:#a9b4c0;line-height:1.8}
+  .card .set b{color:var(--accent);font-weight:600}
+
+  .note{border:1px solid var(--panel-edge);border-left:3px solid var(--accent);border-radius:8px;
+    background:#141b24;padding:12px 16px;font-size:12px;color:var(--muted);line-height:1.7;max-width:none}
+  .note b{color:var(--ink)}
+
+  .pages{display:flex;flex-direction:column;margin:18px 0 6px}
+  .pagecard{border:1px solid var(--panel-edge);border-radius:10px;background:#141b24;padding:16px 20px 16px}
+  .pagehead{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+  .pageno{color:var(--accent);font-size:10px;letter-spacing:.2em;border:1px solid var(--accent);
+    border-radius:3px;padding:2px 7px;white-space:nowrap}
+  .pagename{color:#e8eef5;font-weight:700;font-size:13px}
+  .pagewhat{color:var(--muted);font-size:11.5px;margin-left:auto;text-align:right}
+  .potline{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .potviz{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;
+    border-top:1px dashed #2c3641;padding-top:12px}
+  .potdot{width:30px;height:30px;border-radius:50%;border:2px solid var(--muted);position:relative;flex:none}
+  .potdot::after{content:"";position:absolute;left:50%;top:2px;width:2px;height:9px;
+    background:var(--muted);transform:translateX(-50%)}
+  .potdot.push{border-color:var(--accent)}
+  .potdot.push::after{background:var(--accent)}
+  .potviz b{color:#e8eef5;font-size:12px;letter-spacing:.08em}
+  .potviz small{color:var(--muted);font-size:10.5px;line-height:1.5}
+  .potviz .pushhint{color:var(--accent);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase}
+  .pagearrow{display:flex;align-items:center;gap:10px;color:var(--accent);
+    font-size:10px;letter-spacing:.18em;text-transform:uppercase;padding:6px 0}
+  .pagearrow::before{content:"";width:2px;height:18px;background:var(--panel-edge);margin-left:34px}
+
+  .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0 14px}
+  .flow span{border:1px solid var(--panel-edge);background:#141b24;border-radius:6px;
+    padding:5px 10px;font-size:10.5px;letter-spacing:.08em;color:var(--ink)}
+  .flow em{color:var(--accent);font-style:normal;font-size:11px}
+
+  .qa dt{font-size:12.5px;color:#e8eef5;font-weight:700;margin-top:14px}
+  .qa dt:first-child{margin-top:0}
+  .qa dd{margin:4px 0 0;font-size:12.5px;line-height:1.7;color:var(--muted)}
+
+  footer{border-top:1px solid #1c242e;padding-top:22px;text-align:center}
+  footer p{max-width:none;margin:0 0 6px}
+  .fin{color:var(--accent);letter-spacing:.3em;font-size:10px;text-transform:uppercase}
+
+  .ctlrow{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:16px}
+  @media (max-width:560px){.ctlrow{grid-template-columns:repeat(2,1fr)}}
+  .ctlrow label{display:flex;flex-direction:column;gap:6px;font-size:10.5px;letter-spacing:.16em;color:var(--accent);text-transform:uppercase}
+  .ctlrow input[type=range]{width:100%;accent-color:var(--accent)}
+  .seg{display:flex;gap:0;border:1px solid var(--panel-edge);border-radius:999px;overflow:hidden;align-self:flex-start;margin-top:14px;width:max-content;max-width:100%;flex-wrap:wrap}
+  .seg button{font:inherit;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:6px 14px;background:#141b24;color:var(--muted);border:0;cursor:pointer}
+  .seg button+button{border-left:1px solid var(--panel-edge)}
+  .seg button[aria-pressed="true"]{background:var(--accent);color:#1a1206;font-weight:700}
+  .seglabel{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:16px}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  canvas.screen{cursor:pointer}
+  .ctl td:first-child{white-space:normal;width:34%}
+  .ctl td:nth-child(2){color:var(--muted);white-space:normal}
+  .params td:nth-child(2),.params td:nth-child(3){white-space:normal;color:var(--ink)}
+  .params td:nth-child(4){color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Ormer Modular · made in Guernsey</div>
+    <h1>MULT</h1>
+    <p class="vstamp">USER MANUAL · EXPERT SLEEPERS DISTING NT · v1.0.0</p>
+    <p class="lede">Mult is a chance mult for the disting NT. One input is shared out to four outputs, and each output has its own chance of passing every incoming hit. Feed it a gate or a trigger and each output tosses its own coin: one hit might reach outputs 1 and 4, the next none, the next all of them. It is useful for thinning one clock or drum pattern across several voices.</p>
+    <nav class="toc"><a href="#screen">The screen</a><a href="#controls">Controls</a><a href="#how">How it works</a><a href="#signals">Gates, triggers, CV and audio</a><a href="#nt">On the disting NT</a><a href="#recipes">Field notes</a><a href="#trouble">Troubleshooting</a><a href="#specs">Specifications</a></nav>
+  </header>
+
+  <section class="panel" id="screen">
+    <span class="screw tl"></span><span class="screw tr"></span>
+    <span class="screw bl"></span><span class="screw br"></span>
+    <div class="screenframe"><canvas id="hero" class="screen" width="256" height="64" aria-label="The Mult screen, animated"></canvas></div>
+    <div class="ctlrow"><label>Out 1<input type="range" min="0" max="100" value="100" data-chance="0"></label><label>Out 2<input type="range" min="0" max="100" value="100" data-chance="1"></label><label>Out 3<input type="range" min="0" max="100" value="100" data-chance="2"></label><label>Out 4<input type="range" min="0" max="100" value="100" data-chance="3"></label></div>
+    <div class="seglabel">Input</div>
+    <div class="seg" role="group" aria-label="Simulated input">
+      <button type="button" data-source="clock" aria-pressed="true">Clock</button>
+      <button type="button" data-source="lfo" aria-pressed="false">LFO</button>
+      <button type="button" data-source="held" aria-pressed="false">Held gate</button>
+      <button type="button" data-source="off" aria-pressed="false">Off</button>
+    </div>
+    <p class="cap">This is the module's screen, running a port of the plug-in's drawing code, with a simulated input. The <b>compass rose</b> takes the input, and a live <b>scope</b> on its left shows what the input is doing. Four <b>lanes</b> run to the four outputs. A lane that is <b>open</b> carries beads for as long as a signal runs through it, brighter with the level, and its output box follows the level. A lane that is <b>closed</b> stays still. Every hit sends a spark down the lanes: where the hit passes, the spark runs all the way to the output, and where it is blocked, it dies halfway. The bar beside each output is its chance. Click a lane to select it, as the left encoder does. The <b>Clock</b> source idles a little above zero volts, as a real input can. (The chance figures use an approximation of the NT's own font.)</p>
+  </section>
+
+  <section id="controls">
+    <h2>Controls</h2>
+    <p>Everything is on one screen: four lanes, one per output. There are no pot pages.</p>
+    <div class="tablewrap wide ctl"><table><tr><th>Control</th><th>What it does</th></tr><tr><td>Left encoder, turn</td><td>Select a lane (OUT 1 to OUT 4, wrapping). The selected lane is boxed and bright.</td></tr><tr><td>Right encoder, turn</td><td>Set the selected lane's chance, 1% a click. Spin it and it speeds up, so 0 to 100 is not a hundred clicks.</td></tr><tr><td>Right encoder, push</td><td>Set the selected lane's chance back to 100%, the NT's usual "set to default".</td></tr><tr><td>The three pots, right pot push</td><td>Do nothing while Mult's screen is showing, so they never change a parameter you cannot see.</td></tr><tr><td>Button 2</td><td>Switch to the NT's parameter list, where everything below can be edited, including routing and Threshold.</td></tr><tr><td>Buttons 1, 3 and 4, left pot push, centre pot push, left encoder push</td><td>The NT's own. The left pot push and left encoder push take you back to the overview.</td></tr></table></div>
+    <p class="note"><b>Why the pots are off:</b> with the NT's parameter line hidden behind Mult's screen, a pot that edited a parameter would be
+    changing something you cannot see. Every value is still a real parameter, so it can be reached from the parameter list (button 2) and mapped.</p>
+  </section>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <p>Mult watches the input for hits. A <b>hit</b> is the input rising past the <b>Threshold</b> (0.5 V by default). After a hit the input has to fall back below half of the Threshold (0.25 V by default) before the next one can count, so noise around a level cannot re-trigger it.</p>
+    <p>On every hit, each output makes its own choice. It draws a random number from 0 to 99 and passes the hit if the number is below that output's chance. A chance of 63% passes about 63 hits in 100, and 100% passes all of them. The outputs draw separately, so the choices are independent of each other.</p>
+    <ul><li><b>Pass</b> means the output carries the input signal, unchanged, until the next hit.</li><li><b>Block</b> means the output sits at 0 V until the next hit (in Replace mode; in Add mode it adds nothing).</li><li>Outputs change only at a hit, so there is no smoothing and no added delay.</li><li>The choices are purely random. There are no seeds and no "fair" or evenly spaced modes. Every hit is independent, and every time the algorithm is loaded the sequence is new.</li><li>Mult is a single channel on the NT: one input, four outputs.</li></ul>
+  </section>
+
+  <section id="signals">
+    <h2>Gates, triggers, CV and audio</h2>
+    <p>Any signal can go in. What counts as a hit follows from the rule above:</p>
+    <ul><li><b>Gates and triggers:</b> one choice per gate or trigger. This is what Mult is for: thinning a clock or a drum pattern.</li><li><b>Slow CV:</b> one choice per cycle of an LFO, or per step of a stepped signal, whenever it rises past the Threshold.</li><li><b>Audio:</b> one choice per waveform cycle. See below.</li></ul>
+    <p class="note"><b>An input that never falls back below half of the Threshold never makes a new choice.</b> An input that idles a little above zero volts is fine at the default Threshold, up to about 0.25 V. If yours idles higher, or a signal rides between two positive levels, set the Threshold to more than twice the low level and below the high level. Every output keeps its last result until the next hit.</p>
+    <p><b>Audio.</b> Mult passes audio, and at 100% it passes it cleanly. Below that it makes one choice per waveform cycle, so it randomly drops whole cycles. That adds grit and crackle, even on a pure sine, and you will not hear "a third of the audio". Treat it as a lo-fi effect, not a mute. For musical muting and unmuting, send a gate or a trigger instead. Lower the Threshold toward 0.1 V for the quietest switching point on audio.</p>
+  </section>
+
+  <section id="nt">
+    <h2>On the disting NT</h2>
+    <h3>Installing</h3>
+    <p>Mult needs <a href="https://www.expert-sleepers.co.uk/distingNTfirmwareupdates.html">disting NT firmware 1.19 or newer</a>.</p>
+    <ol><li>Download <code>mult-plugin.zip</code> and unzip it onto the root of the MicroSD card. It puts <code>mult.o</code> in <code>programs/plug-ins/ormermodular/</code>.</li><li>Restart the module (or rescan plug-ins from the settings menu).</li><li>Add an algorithm, then choose <b>Mult</b> (tagged Utility).</li></ol>
+    <h3>Parameters</h3>
+    <p>Every function is a normal NT parameter, listed on two pages: Chance, and Routing.</p>
+    <div class="tablewrap wide params"><table><tr><th>Parameter</th><th>Range</th><th>Default</th><th>What it does</th></tr><tr><td>Input</td><td>a bus, or None</td><td>Input 1</td><td>Where the signal comes from. Gates, triggers, CV or audio. With None, nothing happens.</td></tr><tr><td>Threshold</td><td>0.1 V to 10.0 V</td><td>0.5 V</td><td>The level the input must rise past to count as a hit. It must then fall back below half of this before the next hit can count.</td></tr><tr><td>Out 1 chance to Out 4 chance</td><td>0 to 100%, whole per cent</td><td>100%</td><td>The chance that each output passes a hit. 100% passes every hit, so the output is a plain copy of the input; 0% blocks every hit. Also set from the screen.</td></tr><tr><td>Output 1 to Output 4</td><td>a bus, or None</td><td>Output 1 to Output 4</td><td>Where each output goes. With None, that output is not written anywhere.</td></tr><tr><td>Output 1 mode to Output 4 mode</td><td>Add or Replace</td><td>Replace</td><td>Replace writes the output onto its bus, with 0 V when a hit is blocked. Add sums it onto whatever else is on that bus.</td></tr></table></div>
+    <h3>Automation and CV</h3>
+    <p>All of it can be mapped to CV, MIDI or i2c and automated through the module's own <b>Mappings</b> system, exactly like a built-in algorithm. Map an LFO or a knob to a chance and the pattern thins and fills as it moves. The chances step in whole per cents.</p>
+  </section>
+
+  <section id="recipes">
+    <h2>Field notes</h2>
+    <div class="cards"><div class="card"><h4>Thin a drum pattern</h4><p>One pattern, four densities.</p><span class="set"><b>Input</b> a clock or a drum trigger · <b>Out 1</b> 100% · <b>Out 2</b> 70% · <b>Out 3</b> 40% · <b>Out 4</b> 15%<br>Send the outputs to four voices. The first plays every hit, the others drop more and more of them, differently each time.</span></div><div class="card"><h4>Dice for an envelope</h4><p>Each clock either fires the envelope or it does not.</p><span class="set"><b>Input</b> a clock · <b>Output 1</b> to the envelope's gate · <b>Out 1</b> 50%<br>Raise the chance for a busier line, lower it for a sparser one.</span></div><div class="card"><h4>Density sweep</h4><p>Let the pattern breathe.</p><span class="set"><b>Out 1</b> mapped to a slow LFO or a knob in Mappings<br>The output fills and thins as the chance moves.</span></div><div class="card"><h4>A few missing hits</h4><p>Humanise a machine-like pattern.</p><span class="set"><b>Out 1 to Out 4</b> all 90%<br>About one hit in ten goes missing, never the same ones twice.</span></div></div>
+  </section>
+
+  <section id="trouble">
+    <h2>Troubleshooting</h2>
+    <dl class="qa"><dt>Mult does not appear in the NT's algorithm list.</dt><dd>Update the module's firmware (Mult needs 1.19 or newer) and check that <code>mult.o</code> is inside <code>programs/plug-ins/ormermodular/</code>.</dd><dt>Nothing comes out of an output.</dt><dd>Check that its chance is not 0%, that the Input and that output are set to a bus and not None, and that the input rises past the Threshold. Until the first hit all outputs sit at 0 V.</dd><dt>The outputs stay open, or stay closed, whatever I set the chances to.</dt><dd>The input is not falling back low enough between hits. It has to drop below half of the Threshold (0.25 V by default). Set the Threshold to more than twice the input's idle level, or check the source really returns low between gates.</dd><dt>Quiet hits are missed.</dt><dd>The input does not rise past the Threshold. Lower it, down to 0.1 V.</dd><dt>Audio crackles when I turn a chance down.</dt><dd>That is how Mult treats audio: below 100% it drops random waveform cycles. Use gates or triggers for musical muting.</dd><dt>I hear a signal twice, or outputs add together.</dt><dd>Two outputs on the same bus in Add mode sum. Keep the default Replace unless you want that.</dd><dt>The pots do nothing.</dt><dd>By design: while Mult's screen shows, the pots and the right pot push are switched off so you cannot change a hidden parameter. Use the encoders, or press button 2 for the parameter list.</dd><dt>The screen is still.</dt><dd>It follows the input. With no signal, or Input set to None, it settles.</dd></dl>
+  </section>
+
+  <section id="specs">
+    <h2>Specifications</h2>
+    <div class="tablewrap"><table><tr><td>Format</td><td>disting NT algorithm, free, closed source</td></tr><tr><td>Version</td><td>1.0.0</td></tr><tr><td>Firmware</td><td>1.19 or newer</td></tr><tr><td>Input</td><td>1, any bus (or None); gates, triggers, CV or audio</td></tr><tr><td>Outputs</td><td>4, each on any bus (or None), Add or Replace</td></tr><tr><td>Chance</td><td>0 to 100 per cent in whole per cent steps, default 100%, one per output</td></tr><tr><td>Hit</td><td>input rises past Threshold (0.1 V to 10.0 V, default 0.5 V); re-arms below half of it</td></tr><tr><td>Random choices</td><td>fresh on every hit, for every output; a new sequence each time the algorithm loads</td></tr><tr><td>Signal path</td><td>passed unchanged: no gain, no smoothing, no added delay</td></tr><tr><td>Channels</td><td>one (the NT has no polyphony)</td></tr><tr><td>Parameters</td><td>14, on two pages: Chance and Routing</td></tr><tr><td>Tag</td><td>Utility</td></tr></table></div>
+  </section>
+
+  <footer>
+    <p>Mult is free, closed source, and made by Ormer Modular in Guernsey.</p>
+    <p class="fin">Ormer Modular</p>
+  </footer>
+
+</div>
+<script>
+// The Mult disting NT display for the manual: a port of draw() in nt/mult_nt.cpp onto a
+// 256x64 canvas, fed by a small simulation of the same hit logic (so the pictures follow an
+// input exactly as the module's screen does). Keep it in step with the plug-in's draw().
+// The module's normal-size font is not available here: the chance values are an approximation.
+(function () {
+  var cv = document.getElementById('hero');
+  if (!cv) return;
+  var ctx = cv.getContext('2d');
+
+  // ---- canvas helpers (same shapes as NT_drawShapeI / NT_drawText) ------------------------
+  function shade(c) {
+    var a = c / 15; a = a * (0.55 + 0.45 * a);
+    return 'rgb(' + Math.round(8 + a * 225) + ',' + Math.round(10 + a * 235) + ',' + Math.round(14 + a * 241) + ')';
+  }
+  function P(x, y, c) { if (x < 0 || x > 255 || y < 0 || y > 63) return; ctx.fillStyle = shade(Math.max(0, Math.min(15, c))); ctx.fillRect(x, y, 1, 1); }
+  function rect(x0, y0, x1, y1, c) { for (var y = y0; y <= y1; y++) for (var x = x0; x <= x1; x++) P(x, y, c); }
+  function box(x0, y0, x1, y1, c) { for (var x = x0; x <= x1; x++) { P(x, y0, c); P(x, y1, c); } for (var y = y0; y <= y1; y++) { P(x0, y, c); P(x1, y, c); } }
+  function line(x0, y0, x1, y1, c) {
+    var dx = x1 - x0, dy = y1 - y0, n = Math.max(Math.abs(dx), Math.abs(dy));
+    if (!n) { P(x0, y0, c); return; }
+    for (var i = 0; i <= n; i++) P(x0 + Math.trunc(dx * i / n), y0 + Math.trunc(dy * i / n), c);
+  }
+  var F = { '0': '111101101101111', '1': '010110010010111', '2': '110001010100111', '3': '110001010001110',
+            '4': '101101111001001', '5': '111100110001110', '6': '011100111101111', '7': '111001010100100',
+            '8': '111101111101111', '9': '111101111001110', '%': '101001010100101', 'I': '111010010010111',
+            'N': '110101101101101', 'O': '010101101101010', 'U': '101101101101111', 'T': '111010010010010' };
+  // y is the baseline; align 'l' | 'r'; big = the approximation of the NT's normal-size font
+  function text(x, y, s, c, align, big) {
+    var gw = big ? 5 : 3, gh = big ? 8 : 5, adv = gw + 1, w = s.length * adv - 1;
+    var x0 = align === 'r' ? x - w : x, yT = y - (gh - 1);
+    for (var i = 0; i < s.length; i++) {
+      var g = F[s[i]]; if (!g) continue;
+      for (var r = 0; r < gh; r++) for (var k = 0; k < gw; k++) {
+        var sr = big ? Math.trunc(r * 5 / 8) : r, sc = big ? Math.trunc(k * 3 / 5) : k;
+        if (g[sr * 3 + sc] === '1') P(x0 + i * adv + k, yT + r, c);
+      }
+    }
+  }
+  function idiv(a, b) { return Math.trunc(a / b); }
+
+  // ---- the plug-in's constants ---------------------------------------------------------------
+  var ROSE = ['....#....', '....#....', '..#.#.#..', '...###...', '####.####', '...###...', '..#.#.#..', '....#....', '....#....'];
+  var ROSE_X = 15, ROSE_Y = 23, LANE_START_X = 36, LANE_START_Y = 32, BEND_X = 52, NODE_X = 122,
+      BLOCK_X = 88, BAR_X0 = 136, BAR_W = 72, PULSE_TICKS = 22, LANE_Y = [10, 26, 42, 58],
+      LANES = 4, SCOPE_COLS = 13, SCOPE_H = 22;
+
+  // ---- state: the algorithm instance, then the hit logic ---------------------------------------
+  var S = {
+    tick: 0, env: 0, accLo: 1e9, accHi: -1e9, inMin: 1e9, inMax: -1e9, inAge: 255,
+    pulseAge: [255, 255, 255, 255], pulsePassed: [0, 0, 0, 0],
+    scopeLo: [], scopeHi: [], scopeHead: 0, scopeDiv: 0, selected: 0,
+    pass: [false, false, false, false], armed: true, chance: [100, 100, 100, 100]
+  };
+  for (var i = 0; i < SCOPE_COLS; i++) { S.scopeLo[i] = S.scopeHi[i] = SCOPE_H >> 1; }
+  var RISE = 0.5, FALL = 0.25;			// the Threshold default and its re-arm level
+
+  function engineStep(x) {				// one sample of the plug-in's hit logic
+    if (x < S.inMin) S.inMin = x;
+    if (x > S.inMax) S.inMax = x;
+    if (x <= FALL) { S.armed = true; return; }
+    if (!S.armed || x <= RISE) return;
+    S.armed = false;
+    for (var o = 0; o < LANES; o++) {
+      S.pass[o] = Math.floor(Math.random() * 100) < S.chance[o];
+      S.pulseAge[o] = 0; S.pulsePassed[o] = S.pass[o] ? 1 : 0;
+    }
+    S.inAge = 0;
+  }
+
+  // ---- draw(), line for line --------------------------------------------------------------------
+  function lanePoint(lane, d) {
+    var ly = LANE_Y[lane], dx = BEND_X - LANE_START_X, dy = ly - LANE_START_Y;
+    var ady = dy < 0 ? -dy : dy, diag = dx + (ady >> 1);
+    if (d < diag) return [LANE_START_X + idiv(dx * d, diag), LANE_START_Y + idiv(dy * d, diag)];
+    return [BEND_X + (d - diag), ly];
+  }
+  function laneLength(lane) {
+    var ady = Math.abs(LANE_Y[lane] - LANE_START_Y);
+    return (BEND_X - LANE_START_X) + (ady >> 1) + (NODE_X - BEND_X);
+  }
+  function drawPulse(lane, age, passed) {
+    var ly = LANE_Y[lane], endX = passed ? NODE_X : BLOCK_X, total = PULSE_TICKS, diagTicks = 5, px, py;
+    if (age > total) return;
+    if (age < diagTicks) {
+      px = LANE_START_X + idiv((BEND_X - LANE_START_X) * age, diagTicks);
+      py = LANE_START_Y + idiv((ly - LANE_START_Y) * age, diagTicks);
+    } else {
+      px = BEND_X + idiv((endX - BEND_X) * (age - diagTicks), total - diagTicks);
+      py = ly;
+    }
+    var c = passed ? 15 : 12 - idiv(age * 9, total);
+    if (c < 2) c = 2;
+    rect(px - 1, py - 1, px + 1, py + 1, c);
+    if (!passed && age > total - 6) {
+      P(BLOCK_X + 2, ly - 2, 5); P(BLOCK_X + 4, ly + 2, 5); P(BLOCK_X + 4, ly - 2, 5);
+      P(BLOCK_X + 2, ly + 2, 5); P(BLOCK_X + 3, ly, 5);
+    }
+  }
+  function scopeRow(volts) {
+    var r = (SCOPE_H >> 1) - Math.trunc(volts * 1.8);
+    return Math.max(0, Math.min(SCOPE_H - 1, r));
+  }
+
+  function draw() {
+    ctx.fillStyle = shade(0); ctx.fillRect(0, 0, 256, 64);
+    S.tick++;
+    var t = S.tick;
+    for (var o = 0; o < LANES; o++) if (S.pulseAge[o] < 255) S.pulseAge[o]++;
+    if (S.inAge < 255) S.inAge++;
+
+    var lo = S.inMin, hi = S.inMax, target = 0;
+    S.inMin = 1e9; S.inMax = -1e9;
+    if (lo <= hi) {
+      var a = (hi > -lo ? hi : -lo) * 0.2; target = a > 1 ? 1 : a;
+      if (lo < S.accLo) S.accLo = lo;
+      if (hi > S.accHi) S.accHi = hi;
+    }
+    S.env += (target - S.env) * (target > S.env ? 0.5 : 0.15);
+    if (S.env < 0.01) S.env = 0;
+    if (++S.scopeDiv >= 2) {
+      S.scopeDiv = 0;
+      var l = SCOPE_H >> 1, h = SCOPE_H >> 1;
+      if (S.accLo <= S.accHi) { h = scopeRow(S.accLo); l = scopeRow(S.accHi); }
+      S.scopeLo[S.scopeHead] = l; S.scopeHi[S.scopeHead] = h;
+      S.scopeHead = (S.scopeHead + 1) % SCOPE_COLS;
+      S.accLo = 1e9; S.accHi = -1e9;
+    }
+    var envI = Math.trunc(S.env * 8 + 0.5);
+
+    // the rose
+    var rc = 5 + (envI >> 1);
+    if (S.inAge < 12) rc = rc + idiv(8 * (12 - S.inAge), 12);
+    if (rc > 15) rc = 15;
+    for (var r = 0; r < 9; r++) for (var c = 0; c < 9; c++)
+      if (ROSE[r][c] === '#') { var x = ROSE_X + c * 2, y = ROSE_Y + r * 2; rect(x, y, x + 1, y + 1, rc); }
+
+    // the input scope
+    var y0 = 32 - (SCOPE_H >> 1);
+    for (var xx = 0; xx < SCOPE_COLS; xx += 2) P(xx, 32, 2);
+    for (var i = 0; i < SCOPE_COLS; i++) {
+      var slot = (S.scopeHead + i) % SCOPE_COLS, cc = 4 + idiv(i * 6, SCOPE_COLS) + (envI >> 2);
+      line(i, y0 + S.scopeLo[slot], i, y0 + S.scopeHi[slot], cc > 12 ? 12 : cc);
+    }
+    text(2, 56, 'IN', 6, 'l', false);
+
+    for (var o2 = 0; o2 < LANES; o2++) {
+      var ly = LANE_Y[o2], sel = o2 === S.selected, chance = Math.max(0, Math.min(100, S.chance[o2])), open = S.pass[o2];
+      line(LANE_START_X, LANE_START_Y, BEND_X, ly, 3);
+      line(BEND_X, ly, NODE_X, ly, 3);
+      if (open && envI > 0) {
+        var len = laneLength(o2), spacing = 14, shift = (t * 2) % spacing;
+        for (var d = shift; d < len; d += spacing) { var p = lanePoint(o2, d); P(p[0], p[1], 5 + envI); }
+      }
+      var nodeC = open ? 5 + envI : 3;
+      if (S.pulsePassed[o2] && S.pulseAge[o2] >= PULSE_TICKS && S.pulseAge[o2] < PULSE_TICKS + 10) {
+        var fl = 15 - (S.pulseAge[o2] - PULSE_TICKS); if (fl > nodeC) nodeC = fl;
+      }
+      if (nodeC > 15) nodeC = 15;
+      rect(NODE_X, ly - 2, NODE_X + 4, ly + 2, nodeC);
+      if (S.pulseAge[o2] <= PULSE_TICKS) drawPulse(o2, S.pulseAge[o2], S.pulsePassed[o2] !== 0);
+
+      text(BAR_X0, ly - 4, 'OUT ' + (o2 + 1), sel ? 15 : 6, 'l', false);
+      rect(BAR_X0, ly - 1, BAR_X0 + BAR_W, ly + 3, 2);
+      var fill = idiv(chance * BAR_W + 50, 100);
+      if (fill > 0) rect(BAR_X0, ly - 1, BAR_X0 + fill, ly + 3, sel ? 13 : 8);
+      if (sel) box(BAR_X0 - 2, ly - 3, BAR_X0 + BAR_W + 2, ly + 5, 11);
+      text(254, ly + 4, chance + '%', sel ? 15 : 8, 'r', true);
+    }
+  }
+
+  // ---- the demo: an input, four chances, a selected lane ----------------------------------------
+  var TICK_S = 1 / 30, SUB = 32, now = 0, source = 'clock';
+  function input(tm) {
+    switch (source) {
+      case 'clock': return (tm % 0.5) < 0.12 ? 5 : 0.02;		// a clock that idles 20 mV above zero, as a real input can
+      case 'lfo': return 5 * Math.sin(2 * Math.PI * 0.8 * tm);
+      case 'held': return tm % 12 < 0.4 ? 0.02 : 5;			// a gate that rises once and stays up
+      default: return 0;
+    }
+  }
+  function step() {
+    for (var k = 0; k < SUB; k++) engineStep(input(now + (k / SUB) * TICK_S));
+    now += TICK_S;
+    draw();
+  }
+
+  var sliders = document.querySelectorAll('[data-chance]');
+  function readChances() { for (var i = 0; i < sliders.length; i++) S.chance[+sliders[i].getAttribute('data-chance')] = +sliders[i].value; }
+  for (var i = 0; i < sliders.length; i++) {
+    sliders[i].addEventListener('input', function () { readChances(); S.selected = +this.getAttribute('data-chance'); });
+  }
+  readChances();
+  var srcBtns = document.querySelectorAll('[data-source]');
+  function pickSource(s) {
+    source = s; now = 0; S.armed = true;
+    for (var i = 0; i < srcBtns.length; i++) srcBtns[i].setAttribute('aria-pressed', srcBtns[i].getAttribute('data-source') === s ? 'true' : 'false');
+  }
+  for (var j = 0; j < srcBtns.length; j++) srcBtns[j].addEventListener('click', function () { pickSource(this.getAttribute('data-source')); });
+  cv.addEventListener('click', function (e) {			// click a lane to select it, like the left encoder
+    var r = cv.getBoundingClientRect(), y = (e.clientY - r.top) * 64 / r.height, best = 0, bd = 99;
+    for (var o = 0; o < LANES; o++) { var dd = Math.abs(y - LANE_Y[o]); if (dd < bd) { bd = dd; best = o; } }
+    S.selected = best;
+  });
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { for (var w = 0; w < 80; w++) step(); } else setInterval(step, 1000 / 30);
+  window.__multDemo = { state: S, draw: draw, step: step, pickSource: pickSource };
+})();
+
+</script>
+</body>
+</html>
