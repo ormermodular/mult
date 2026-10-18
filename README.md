@@ -15,7 +15,8 @@ Turn a chance down and that output starts dropping hits, so one clock or drum pa
 It is polyphonic: each output carries the input's channels, and every channel of every output decides on its own. Four knobs, four lights that flash when a hit passes, and nothing else. 2 HP.
 
 <p align="center">
-  <a href="https://ormermodular.github.io/mult/vcv/">Manual</a> ·
+  <a href="https://ormermodular.github.io/mult/vcv/">VCV Rack manual</a> ·
+  <a href="https://ormermodular.github.io/mult/nt/">disting NT manual</a> ·
   <a href="https://library.vcvrack.com/">VCV Library</a> ·
   <a href="https://ormer.dev">Ormer Modular</a>
 </p>
