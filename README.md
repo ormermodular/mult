@@ -1,4 +1,4 @@
-<p align="center"><img src="assets/banner.svg" alt="Mult" width="100%"></p>
+<p align="center"><img src="docs/images/mult-banner.svg" alt="Mult by Ormer Modular" width="100%"></p>
 
 <p align="center">
   <img alt="Licence: free, closed source" src="https://img.shields.io/badge/licence-free%20%C2%B7%20closed%20source-lightgrey">
